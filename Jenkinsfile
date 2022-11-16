@@ -245,14 +245,14 @@ stages {
                 
      
         }
-    stage("Test") {
+    stage("build") {
 
     
         
        
           steps {
 
-              sh 'npm run test'
+              sh 'npm run build'
             
           }
         
@@ -260,14 +260,14 @@ stages {
       
     }
 
-    stage("Build") {
+    stage("test") {
 
       
         
         
           steps {
           
-              sh 'npm run build'
+              sh 'npm run test'
             
           }
         
