@@ -1,16 +1,10 @@
-# Generated HTML and other static files
-build/
-# Commonly ignored Node.js files
-node_modules/
+.idea/
+*.log
 npm-debug.log
-.npm/
-
-# OSX system files, the bane of our existence
+yarn-error.log
 .DS_Store
-.AppleDouble
-.LSOverride
-
-# Netlify
-.netlify
-
-.cache/
+build/
+node_modules/
+dist/
+.cache
+.next/
