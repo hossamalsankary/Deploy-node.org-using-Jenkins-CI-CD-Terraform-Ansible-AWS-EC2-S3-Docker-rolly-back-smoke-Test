@@ -232,95 +232,75 @@ pipeline {
 stages {
 
      stage("install dependencies"){
-            parallel{
-                    stage("install Frontend dependencies"){
+         
+                    
                      
                         steps{
-                         
-                        dir('./frontend'){
-
+                        
                               sh 'npm install'
-                          
-                        }
 
                         }
-                    }
-                    stage("install backend dependencies"){
-                       
-                        steps{
-                            sh 'npm install -f'
-                        }
-                    }
-                }
+                    
+
+                
      
         }
     stage("Test") {
 
-      parallel {
-        stage("Test Front end") {
+    
+        
        
           steps {
 
-            dir('./frontend') {
               sh 'npm run test'
-            }
+            
           }
-        }
-        stage("Test backend") {
-          
-          steps {
-            echo 'I Have no test Here'
-          }
-        }
-      }
+        
+     
+      
     }
 
     stage("Build") {
 
-      parallel {
-        stage("build Front end") {
+      
+        
         
           steps {
-            dir('./frontend') {
+          
               sh 'npm run build'
-            }
+            
           }
-        }
-        stage("build backend") {
+        
+    
       
-          steps {
-            sh 'npm run build'
-          }
-        }
-      }
     }
-    stage("Build Docker Image") {
-      steps {
+    // stage("Build Docker Image") {
+    //   steps {
 
-        script {
-          dockerImage = docker.build registry + ":$BUILD_NUMBER"
-        }
-      }
-    }
+    //     script {
+    //       dockerImage = docker.build registry + ":$BUILD_NUMBER"
+    //     }
+    //   }
+    // }
 
-    stage("push image") {
-      steps {
-        script {
-          docker.withRegistry('', registryCredential) {
-            dockerImage.push()
-          }
-        }
-      }
-    }
-    stage("Make Sure that image ") {
-      steps {
+    // stage("push image") {
+    //   steps {
+    //     script {
+    //       docker.withRegistry('', registryCredential) {
+    //         dockerImage.push()
+    //       }
+    //     }
+    //   }
+    // }
+    // stage("Make Sure that image ") {
+    //   steps {
 
-        sh ' docker run --name test_$BUILD_NUMBER -d -p 5000:3000 $registry:$BUILD_NUMBER '
-        sh 'sleep 2'
-        sh 'curl localhost:5000'
-      }
+    //     sh ' docker run --name test_$BUILD_NUMBER -d -p 5000:3000 $registry:$BUILD_NUMBER '
+    //     sh 'sleep 2'
+    //     sh 'curl localhost:5000'
+    //   }
 
-    }
+    // }
 
     stage("Deply IAC ") {
       steps {
