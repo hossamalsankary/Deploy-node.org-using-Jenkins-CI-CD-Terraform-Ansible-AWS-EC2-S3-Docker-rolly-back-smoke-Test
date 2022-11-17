@@ -16,6 +16,13 @@ pipeline {
         sh 'npm install'
 
       }
+      post{
+          always{
+                   sh 'bash ./clearDockerImages.sh'
+
+          }
+       
+      }
 
     }
     stage("Test") {
