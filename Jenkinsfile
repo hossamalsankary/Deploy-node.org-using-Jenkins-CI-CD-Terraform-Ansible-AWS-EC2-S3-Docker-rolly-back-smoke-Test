@@ -42,6 +42,12 @@ pipeline {
           dockerImage = docker.build registry + ":$BUILD_NUMBER"
         }
       }
+      post{
+        
+          failure{
+            sh '  docker system prune --volumes -a -f '
+          }
+      }
     }
 
     stage("push image to docker hup") {
@@ -63,11 +69,26 @@ pipeline {
       post {
 
         success {
-          sh 'docker stop test_$BUILD_NUMBER '
-          sh 'docker system prune --volumes -a -f '
+               sh '''#!/bin/bash
+                dockerimages=$(docker ps)
+                if [[$dockerimages = "*test_$BUILD_NUMBER*"]]
+                then
+                  docker stop test_$BUILD_NUMBER &&docker system prune --volumes -a -f
+                else
+                docker system prune --volumes -a -f
+                if
+                '''
         }
         failure {
-          sh 'docker system prune --volumes -a -f '
+               sh '''#!/bin/bash
+                dockerimages=$(docker ps)
+                if [[$dockerimages = "*test_$BUILD_NUMBER*"]]
+                then
+                  docker stop test_$BUILD_NUMBER &&docker system prune --volumes -a -f
+                else
+                docker system prune --volumes -a -f
+                if
+                '''
         }
       }
 
@@ -124,11 +145,27 @@ pipeline {
     success {
 
       echo "========A executed successfully========"
-      sh "docker stop test_$BUILD_NUMBER &&docker system prune --volumes -a -f "
+
+      sh '''#!/bin/bash
+      dockerimages=$(docker ps)
+      if [[$dockerimages = "*test_$BUILD_NUMBER*"]]
+      then
+        docker stop test_$BUILD_NUMBER &&docker system prune --volumes -a -f
+      else
+      docker system prune --volumes -a -f
+      if
+      '''
     }
     failure {
-      echo "========A execution failed========"
-      sh "docker stop test_$BUILD_NUMBER system prune --volumes -a -f "
+        sh '''#!/bin/bash
+      dockerimages=$(docker ps)
+      if [[$dockerimages = "*test_$BUILD_NUMBER*"]]
+      then
+        docker stop test_$BUILD_NUMBER &&docker system prune --volumes -a -f
+      else
+      docker system prune --volumes -a -f
+      if
+      '''
 
     }
   }
