@@ -1,5 +1,6 @@
 - name: docker installation
   hosts: docker
+  gather_facts: no
   become: yes
   tasks:
     - name: Wait 300 seconds, but only start checking after 60 seconds

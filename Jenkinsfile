@@ -221,101 +221,101 @@ pipeline {
   }
   stages {
 
-    stage("install dependencies") {
+    // stage("install dependencies") {
 
-      steps {
+    //   steps {
 
-        sh 'npm install'
+    //     sh 'npm install'
 
-      }
+    //   }
 
-    }
-    stage("Test") {
+    // }
+    // stage("Test") {
 
-      steps {
+    //   steps {
 
-        sh 'npm run  test:unit'
+    //     sh 'npm run  test:unit'
 
-      }
+    //   }
 
-    }
+    // }
 
-    stage("Build") {
+    // stage("Build") {
 
-      steps {
+    //   steps {
 
-        sh 'npm run build'
+    //     sh 'npm run build'
 
-      }
+    //   }
 
-    }
-    stage("Build Docker Image") {
-      steps {
+    // }
+    // stage("Build Docker Image") {
+    //   steps {
 
-        script {
-          dockerImage = docker.build registry + ":$BUILD_NUMBER"
-        }
-      }
-    }
+    //     script {
+    //       dockerImage = docker.build registry + ":$BUILD_NUMBER"
+    //     }
+    //   }
+    // }
 
-    stage("push image to docker hup") {
-      steps {
-        script {
-          docker.withRegistry('', registryCredential) {
-            dockerImage.push()
-          }
-        }
-      }
-    }
-    stage("Smoke Test ") {
-      steps {
+    // stage("push image to docker hup") {
+    //   steps {
+    //     script {
+    //       docker.withRegistry('', registryCredential) {
+    //         dockerImage.push()
+    //       }
+    //     }
+    //   }
+    // }
+    // stage("Smoke Test ") {
+    //   steps {
 
-        sh ' docker run --name test_$BUILD_NUMBER -d -p 5000:8080 $registry:$BUILD_NUMBER '
-        sh 'sleep 2'
-        sh 'curl localhost:5000'
-      }
-      post{
+    //     sh ' docker run --name test_$BUILD_NUMBER -d -p 5000:8080 $registry:$BUILD_NUMBER '
+    //     sh 'sleep 2'
+    //     sh 'curl localhost:5000'
+    //   }
+    //   post{
         
-          success{
-              sh 'docker stop test_$BUILD_NUMBER '
-              sh 'docker system prune --volumes -a -f '
-          }
-          failure{
-               sh 'docker system prune --volumes -a -f '
+    //       success{
+    //           sh 'docker stop test_$BUILD_NUMBER '
+    //           sh 'docker system prune --volumes -a -f '
+    //       }
+    //       failure{
+    //            sh 'docker system prune --volumes -a -f '
 
-          }
-      }
+    //       }
+    //   }
 
-    }
+    // }
 
-    stage("Deply IAC ") {
-      steps {
-        withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-          dir("terraform-aws-instance") {
-            sh 'terraform init'
-            sh 'terraform destroy --auto-approve'
-           sh 'terraform apply --auto-approve'
-          }
-        }
-      }
-      post{
+    // stage("Deply IAC ") {
+    //   steps {
+    //     withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+    //       dir("terraform-aws-instance") {
+    //         sh 'terraform init'
+    //         sh 'terraform destroy --auto-approve'
+    //        sh 'terraform apply --auto-approve'
+    //       }
+    //     }
+    //   }
+    //   post{
           
-          success{
-              echo "we  successful deploy IAC"
-          }
-          failure{
-            withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+    //       success{
+    //           echo "we  successful deploy IAC"
+    //       }
+    //       failure{
+    //         withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
             
-                dir("terraform-aws-instance"){
-                          sh 'terraform destroy --auto-approve'
+    //             dir("terraform-aws-instance"){
+    //                       sh 'terraform destroy --auto-approve'
 
-                }
+    //             }
 
-              }
+    //           }
 
-          }
-      }
-    }
+    //       }
+    //   }
+    // }
     stage("ansbile") {
       steps {
         dir("./terraform-aws-instance") {
