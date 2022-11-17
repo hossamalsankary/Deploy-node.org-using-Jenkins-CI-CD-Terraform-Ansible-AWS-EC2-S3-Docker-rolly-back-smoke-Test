@@ -283,7 +283,7 @@ pipeline {
           dir("terraform-aws-instance") {
             sh 'terraform init'
             sh 'terraform destroy --auto-approve'
-            sh 'terraform apply --auto-approve'
+            // sh 'terraform apply --auto-approve'
           }
         }
       }
@@ -293,7 +293,7 @@ pipeline {
         dir("./terraform-aws-instance") {
           withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
 
-            sh 'ansible-playbook -i ansbile/inventory/inventory --extra-vars ansible_ssh_host=$(terraform output  -raw server_ip) --extra-vars  IMAGE_NAME="{{$registry:$BUILD_NUMBER}}" --private-key=$ANSIBLE_PRIVATE_KEY ./ansbile/inventory/deploy.yml '
+            sh 'ansible-playbook -i ansbile/inventory/inventory --extra-vars ansible_ssh_host=$(terraform output  -raw server_ip) --extra-vars  IMAGE_NAME=$registry:$BUILD_NUMBER --private-key=$ANSIBLE_PRIVATE_KEY ./ansbile/inventory/deploy.yml '
             // sh 'ansible-playbook -i ./ansbile/deploy/inventory   --private-key=$ANSIBLE_PRIVATE_KEY ./ansbile/deploy/deploy.yml'
 
           }
