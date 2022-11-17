@@ -118,9 +118,7 @@ pipeline {
   }
 
   post {
-    always{
-      sh 'bash ./clearDockerImages.sh'
-    }
+   
     success {
       echo "========A executed successfully========"
       sh 'bash ./clearDockerImages.sh'
