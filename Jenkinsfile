@@ -215,7 +215,7 @@ pipeline {
   agent any
 
   environment {
-    registry = "hossamalsankary/node-app"
+    registry = "hossamalsankary/nodejs_app"
     registryCredential = 'docker_credentials'
     ANSIBLE_PRIVATE_KEY = credentials('secritfile')
   }
@@ -249,33 +249,33 @@ pipeline {
       }
 
     }
-    // stage("Build Docker Image") {
-    //   steps {
+    stage("Build Docker Image") {
+      steps {
 
-    //     script {
-    //       dockerImage = docker.build registry + ":$BUILD_NUMBER"
-    //     }
-    //   }
-    // }
+        script {
+          dockerImage = docker.build registry + ":$BUILD_NUMBER"
+        }
+      }
+    }
 
-    // stage("push image") {
-    //   steps {
-    //     script {
-    //       docker.withRegistry('', registryCredential) {
-    //         dockerImage.push()
-    //       }
-    //     }
-    //   }
-    // }
-    // stage("Make Sure that image ") {
-    //   steps {
+    stage("push image") {
+      steps {
+        script {
+          docker.withRegistry('', registryCredential) {
+            dockerImage.push()
+          }
+        }
+      }
+    }
+    stage("Make Sure that image ") {
+      steps {
 
-    //     sh ' docker run --name test_$BUILD_NUMBER -d -p 5000:3000 $registry:$BUILD_NUMBER '
-    //     sh 'sleep 2'
-    //     sh 'curl localhost:5000'
-    //   }
+        sh ' docker run --name test_$BUILD_NUMBER -d -p 5000:3000 $registry:$BUILD_NUMBER '
+        sh 'sleep 2'
+        sh 'curl localhost:5000'
+      }
 
-    // }
+    }
 
     stage("Deply IAC ") {
       steps {
@@ -283,9 +283,26 @@ pipeline {
           dir("terraform-aws-instance") {
             sh 'terraform init'
             sh 'terraform destroy --auto-approve'
-            // sh 'terraform apply --auto-approve'
+           sh 'terraform apply --auto-approve'
           }
         }
+      }
+      post{
+          
+          success{
+              echo "we  successful deploy IAC"
+          }
+          failure{
+            withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+            
+                dir("terraform-aws-instance"){
+                          sh 'terraform destroy --auto-approve'
+
+                }
+
+              }
+
+          }
       }
     }
     stage("ansbile") {
