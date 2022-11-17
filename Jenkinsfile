@@ -258,7 +258,7 @@ pipeline {
       }
     }
 
-    stage("push image") {
+    stage("push image to docker hup") {
       steps {
         script {
           docker.withRegistry('', registryCredential) {
@@ -267,12 +267,23 @@ pipeline {
         }
       }
     }
-    stage("Make Sure that image ") {
+    stage("Smoke Test ") {
       steps {
 
-        sh ' docker run --name test_$BUILD_NUMBER -d -p 5000:3000 $registry:$BUILD_NUMBER '
+        sh ' docker run --name test_$BUILD_NUMBER -d -p 5000:8080 $registry:$BUILD_NUMBER '
         sh 'sleep 2'
         sh 'curl localhost:5000'
+      }
+      post{
+        
+          success{
+              sh 'docker stop test_$BUILD_NUMBER '
+              sh 'docker system prune --volumes -a -f '
+          }
+          failure{
+               sh 'docker system prune --volumes -a -f '
+
+          }
       }
 
     }
