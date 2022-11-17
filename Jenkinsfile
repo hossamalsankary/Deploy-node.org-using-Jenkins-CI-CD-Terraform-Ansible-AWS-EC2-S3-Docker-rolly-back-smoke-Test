@@ -7,7 +7,8 @@ pipeline {
     ANSIBLE_PRIVATE_KEY = credentials('secritfile')
   }
   stages {
-
+    
+    
     stage("install dependencies") {
 
       steps {
@@ -66,33 +67,7 @@ pipeline {
         sh 'sleep 2'
         sh 'curl localhost:5000'
       }
-      post {
-
-        success {
-          sh '''#!/bin/bash
-              dockerimages=$(docker ps)
-              if [[ $dockerimages = "*test_1*" ]]
-              then
-              docker stop test_1 &&docker system prune --volumes -a -f
-              else
-              echo 'clear'
-              docker system prune --volumes -a -f
-              fi
-      '''
-        }
-        failure {
-                  sh '''#!/bin/bash
-                  dockerimages=$(docker ps)
-                  if [[ $dockerimages = "*test_1*" ]]
-                  then
-                  docker stop test_1 &&docker system prune --volumes -a -f
-                  else
-                  echo 'clear'
-                  docker system prune --volumes -a -f
-                  fi
-              '''
-        }
-      }
+  
 
     }
 
@@ -143,32 +118,16 @@ pipeline {
   }
 
   post {
+    always{
+      sh 'bash ./clearDockerImages.sh'
+    }
     success {
       echo "========A executed successfully========"
+      sh 'bash ./clearDockerImages.sh'
 
-        sh '''#!/bin/bash
-          dockerimages=$(docker ps)
-          if [[ $dockerimages = "*test_1*" ]]
-          then
-          docker stop test_1 &&docker system prune --volumes -a -f
-          else
-          echo 'clear'
-          docker system prune --volumes -a -f
-          fi
-      '''
     }
     failure {
-        sh '''#!/bin/bash
-          dockerimages=$(docker ps)
-          if [[ $dockerimages = "*test_1*" ]]
-          then
-          docker stop test_1 &&docker system prune --volumes -a -f
-          else
-          echo 'clear'
-          docker system prune --volumes -a -f
-          fi
-      '''
-
+           sh 'bash ./clearDockerImages.sh'
     }
   }
 }
