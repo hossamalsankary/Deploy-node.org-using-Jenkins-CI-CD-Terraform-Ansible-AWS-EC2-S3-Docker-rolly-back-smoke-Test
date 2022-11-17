@@ -69,26 +69,28 @@ pipeline {
       post {
 
         success {
-               sh '''#!/bin/bash
-                dockerimages=$(docker ps)
-                if [[$dockerimages = "*test_$BUILD_NUMBER*"]]
-                then
-                  docker stop test_$BUILD_NUMBER &&docker system prune --volumes -a -f
-                else
-                docker system prune --volumes -a -f
-                if
-                '''
+          sh '''#!/bin/bash
+              dockerimages=$(docker ps)
+              if [[ $dockerimages = "*test_1*" ]]
+              then
+              docker stop test_1 &&docker system prune --volumes -a -f
+              else
+              echo 'clear'
+              docker system prune --volumes -a -f
+              fi
+      '''
         }
         failure {
-               sh '''#!/bin/bash
-                dockerimages=$(docker ps)
-                if [[$dockerimages = "*test_$BUILD_NUMBER*"]]
-                then
-                  docker stop test_$BUILD_NUMBER &&docker system prune --volumes -a -f
-                else
-                docker system prune --volumes -a -f
-                if
-                '''
+                  sh '''#!/bin/bash
+                  dockerimages=$(docker ps)
+                  if [[ $dockerimages = "*test_1*" ]]
+                  then
+                  docker stop test_1 &&docker system prune --volumes -a -f
+                  else
+                  echo 'clear'
+                  docker system prune --volumes -a -f
+                  fi
+              '''
         }
       }
 
@@ -141,30 +143,30 @@ pipeline {
   }
 
   post {
-
     success {
-
       echo "========A executed successfully========"
 
-      sh '''#!/bin/bash
-      dockerimages=$(docker ps)
-      if [[$dockerimages = "*test_$BUILD_NUMBER*"]]
-      then
-        docker stop test_$BUILD_NUMBER &&docker system prune --volumes -a -f
-      else
-      docker system prune --volumes -a -f
-      if
+        sh '''#!/bin/bash
+          dockerimages=$(docker ps)
+          if [[ $dockerimages = "*test_1*" ]]
+          then
+          docker stop test_1 &&docker system prune --volumes -a -f
+          else
+          echo 'clear'
+          docker system prune --volumes -a -f
+          fi
       '''
     }
     failure {
         sh '''#!/bin/bash
-      dockerimages=$(docker ps)
-      if [[$dockerimages = "*test_$BUILD_NUMBER*"]]
-      then
-        docker stop test_$BUILD_NUMBER &&docker system prune --volumes -a -f
-      else
-      docker system prune --volumes -a -f
-      if
+          dockerimages=$(docker ps)
+          if [[ $dockerimages = "*test_1*" ]]
+          then
+          docker stop test_1 &&docker system prune --volumes -a -f
+          else
+          echo 'clear'
+          docker system prune --volumes -a -f
+          fi
       '''
 
     }
