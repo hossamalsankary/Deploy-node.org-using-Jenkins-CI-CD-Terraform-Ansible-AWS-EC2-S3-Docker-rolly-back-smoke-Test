@@ -2,7 +2,6 @@
 // pipeline{
 //        agent any
 
-  
 //   environment {
 //     registry = "hossamalsankary/node-app"
 //     registryCredential = 'docker_credentials'
@@ -21,11 +20,11 @@
 //                             }
 //                         steps{
 //                          sh "cat /etc/*os*"   
-                         
+
 //                         dir('./frontend'){
 
 //                               sh 'npm install'
-                          
+
 //                         }
 
 //                         }
@@ -42,10 +41,10 @@
 //                         }
 //                     }
 //                 }
-     
+
 //         }
 //         stage("Test"){
-          
+
 //           parallel{
 //             stage("Test Front end"){
 //                         agent {
@@ -75,9 +74,8 @@
 //           }
 //         }
 
-        
 //         stage("Build"){
-          
+
 //           parallel{
 //             stage("build Front end"){
 //                         agent {
@@ -113,7 +111,6 @@
 //                }
 //             }
 //         }
-    
 
 //         stage("push image"){
 //             steps{
@@ -131,12 +128,10 @@
 //                 sh 'sleep 2'
 //                 sh 'curl localhost:5000'
 //             }
-    
-        
+
 //         }
 
 //         stage("Deply IAC "){
-          
 
 //             steps{
 //             withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
@@ -148,19 +143,17 @@
 
 //                 }
 //              }
-       
+
 //     // some block
-                
+
 //             }
 //         }
 
-     
-  
 //     }
 
 //     }
 //     post{
-             
+
 //         success{
 
 //               echo "========A executed successfully========"
@@ -172,9 +165,6 @@
 
 //         }
 //      }
-
-
-
 
 // pipeline {
 //   agent any
@@ -229,50 +219,35 @@ pipeline {
     registryCredential = 'docker_credentials'
     ANSIBLE_PRIVATE_KEY = credentials('secritfile')
   }
-stages {
+  stages {
 
-     stage("install dependencies"){
-         
-                    
-                     
-                        steps{
-                        
-                              sh 'npm install'
+    stage("install dependencies") {
 
-                        }
-                    
+      steps {
 
-                
-     
-        }
-    stage("build") {
+        sh 'npm install'
 
-    
-        
-       
-          steps {
+      }
 
-              sh 'npm run build'
-            
-          }
-        
-     
-      
+    }
+    stage("Test") {
+
+      steps {
+
+        sh 'npm run  test:unit'
+
+      }
+
     }
 
-    stage("test") {
+    stage("Build") {
 
-      
-        
-        
-          steps {
-          
-              sh 'npm run test'
-            
-          }
-        
-    
-      
+      steps {
+
+        sh 'npm run build'
+
+      }
+
     }
     // stage("Build Docker Image") {
     //   steps {
@@ -313,33 +288,32 @@ stages {
         }
       }
     }
-      stage("ansbile") {
-        steps {
-          dir("./terraform-aws-instance") {
-            withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+    stage("ansbile") {
+      steps {
+        dir("./terraform-aws-instance") {
+          withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
 
-              sh 'ansible-playbook -i ansbile/inventory/inventory --extra-vars ansible_ssh_host=$(terraform output  -raw server_ip) --extra-vars  IMAGE_NAME="{{$registry:$BUILD_NUMBER}}" --private-key=$ANSIBLE_PRIVATE_KEY ./ansbile/inventory/deploy.yml '
-              // sh 'ansible-playbook -i ./ansbile/deploy/inventory   --private-key=$ANSIBLE_PRIVATE_KEY ./ansbile/deploy/deploy.yml'
+            sh 'ansible-playbook -i ansbile/inventory/inventory --extra-vars ansible_ssh_host=$(terraform output  -raw server_ip) --extra-vars  IMAGE_NAME="{{$registry:$BUILD_NUMBER}}" --private-key=$ANSIBLE_PRIVATE_KEY ./ansbile/inventory/deploy.yml '
+            // sh 'ansible-playbook -i ./ansbile/deploy/inventory   --private-key=$ANSIBLE_PRIVATE_KEY ./ansbile/deploy/deploy.yml'
 
-            }
           }
         }
       }
+    }
 
   }
 
-    // post {
+  // post {
 
-    //   success {
+  //   success {
 
-    //     echo "========A executed successfully========"
-    //     sh "docker stop test_$BUILD_NUMBER &&docker system prune --volumes -a -f "
-    //   }
-    //   failure {
-    //     echo "========A execution failed========"
-    //     sh "docker stop test_$BUILD_NUMBER system prune --volumes -a -f "
+  //     echo "========A executed successfully========"
+  //     sh "docker stop test_$BUILD_NUMBER &&docker system prune --volumes -a -f "
+  //   }
+  //   failure {
+  //     echo "========A execution failed========"
+  //     sh "docker stop test_$BUILD_NUMBER system prune --volumes -a -f "
 
-    //   }
-    // }
+  //   }
+  // }
 }
-
