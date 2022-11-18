@@ -15,7 +15,6 @@ pipeline {
     stage("install dependencies") {
 
       steps {
-         cleanWs()
         sh 'npm install'
 
       }
