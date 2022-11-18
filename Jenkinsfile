@@ -1,4 +1,4 @@
-def serverIP = ''
+def serverIP = 'soe data'
 pipeline {
   agent any
   options {
@@ -27,24 +27,31 @@ pipeline {
       }
 
     }
-    stage("Test") {
 
-      steps {
+    stage(" "){
+      parallel {
+        stage("Test") {
 
-        sh 'npm run  test:unit'
+            steps {
 
+              sh 'npm run  test:unit'
+
+            }
+
+          }
+        stage("Build") {
+
+            steps {
+
+              sh 'npm run build'
+            }
+
+          }
       }
-
     }
+  
 
-    stage("Build") {
-
-      steps {
-
-        sh 'npm run build'
-      }
-
-    }
+ 
     stage("Build Docker Image") {
       steps {
 
@@ -88,9 +95,9 @@ pipeline {
             sh 'terraform init'
             sh 'terraform destroy --auto-approve'
             sh 'terraform apply --auto-approve'
-            sh 'terraform output  -raw server_ip > tump '
+            sh 'terraform output  -raw server_ip > tump.txt '
             script {
-              serverIP = readFile('tump').trim()
+              serverIP = readFile('tump.txt').trim()
             }
 
           }
@@ -119,14 +126,16 @@ pipeline {
       }
       steps {
         dir("./terraform-aws-instance") {
-       sh '  echo ${serverIP} '
-
-          sh 'ansible-playbook -i ansbile/inventory/inventory --extra-vars ansible_ssh_host=${serverIP} --extra-vars  IMAGE_NAME=$registry:$BUILD_NUMBER --private-key=$ANSIBLE_PRIVATE_KEY ./ansbile/inventory/deploy.yml '
+         sh "  echo ${serverIP} "
+          sh " ansible-playbook -i ansbile/inventory/inventory --extra-vars ansible_ssh_host=${serverIP} --extra-vars  IMAGE_NAME=$registry:$BUILD_NUMBER --private-key=$ANSIBLE_PRIVATE_KEY ./ansbile/inventory/deploy.yml "
 
         }
       }
     }
     stage("Somok test in prod server") {
+        when {
+        branch 'master'
+      }
       steps {
         echo "${serverIP}"
         sh 'curl ${serverIP} '
