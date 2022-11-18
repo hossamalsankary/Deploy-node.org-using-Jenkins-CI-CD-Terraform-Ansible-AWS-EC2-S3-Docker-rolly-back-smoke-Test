@@ -1,6 +1,9 @@
 pipeline {
   agent any
-
+    options {
+        // This is required if you want to clean before build
+        skipDefaultCheckout(true)
+    }
   environment {
     registry = "hossamalsankary/nodejs_app"
     registryCredential = 'docker_credentials'
@@ -12,7 +15,7 @@ pipeline {
     stage("install dependencies") {
 
       steps {
-
+         cleanWs()
         sh 'npm install'
 
       }
@@ -125,7 +128,14 @@ pipeline {
   }
 
   post {
-   
+    always {
+            cleanWs(cleanWhenNotBuilt: false,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true,
+                    patterns: [[pattern: '.gitignore', type: 'INCLUDE'],
+                               [pattern: '.propsfile', type: 'EXCLUDE']])
+        }
     success {
       echo "========A executed successfully========"
       sh 'bash ./clearDockerImages.sh'
