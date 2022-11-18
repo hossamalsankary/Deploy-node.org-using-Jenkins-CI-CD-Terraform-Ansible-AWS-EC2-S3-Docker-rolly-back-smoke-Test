@@ -94,7 +94,7 @@ pipeline {
               
           }
         }
-         env.server_ip = ip
+         params.server_ip = $ip
         
       }
       post {
