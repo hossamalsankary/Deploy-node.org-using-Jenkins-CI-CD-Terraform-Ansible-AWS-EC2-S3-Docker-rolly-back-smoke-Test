@@ -14,7 +14,7 @@ pipeline {
   }
 
   stages {
-   
+    install dependencies
     stage("install dependencies") {
 
       steps {
@@ -120,8 +120,8 @@ pipeline {
       }
       steps {
         dir("./terraform-aws-instance") {
-          sh '  echo ${serverIP}'
-'
+       sh '  echo ${serverIP} '
+
           sh 'ansible-playbook -i ansbile/inventory/inventory --extra-vars ansible_ssh_host=${serverIP} --extra-vars  IMAGE_NAME=$registry:$BUILD_NUMBER --private-key=$ANSIBLE_PRIVATE_KEY ./ansbile/inventory/deploy.yml '
 
         }
