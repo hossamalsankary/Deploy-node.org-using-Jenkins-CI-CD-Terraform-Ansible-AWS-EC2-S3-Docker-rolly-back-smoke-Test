@@ -29,7 +29,7 @@ pipeline {
 
     }
     stage('Parallel Stage') {
-      parallel{
+      parallel {
 
         stage("Test") {
 
