@@ -28,6 +28,8 @@ pipeline {
       }
 
     }
+
+    parallel{
     stage("Test") {
 
       steps {
@@ -44,6 +46,8 @@ pipeline {
 
         sh 'npm run build'
       }
+
+    }
 
     }
     stage("Build Docker Image") {
