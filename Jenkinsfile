@@ -1,12 +1,12 @@
 def serverIP = ''
 pipeline {
   agent any
-    options {
-        skipDefaultCheckout(true)
-    }
-      parameters {
-            string(name: 'server_ip', defaultValue: '')
-        }
+  options {
+    skipDefaultCheckout(true)
+  }
+  parameters {
+    string(name: 'server_ip', defaultValue: '')
+  }
   environment {
     registry = "hossamalsankary/nodejs_app"
     registryCredential = 'docker_credentials'
@@ -14,75 +14,74 @@ pipeline {
   }
 
   stages {
-   // install dependencies
-    // stage("install dependencies") {
+    install dependencies
+    stage("install dependencies") {
 
-    //   steps {
-    //     sh 'npm install'
-    //   }
-    //   post{
-    //       always{
-    //                sh 'bash ./clearDockerImages.sh'
-    //       }
-       
-    //   }
+      steps {
+        sh 'npm install'
+      }
+      post {
+        always {
+          sh 'bash ./clearDockerImages.sh'
+        }
 
-    // }
-    // stage("Test") {
+      }
 
-    //   steps {
+    }
+    stage("Test") {
 
-    //     sh 'npm run  test:unit'
+      steps {
 
-    //   }
+        sh 'npm run  test:unit'
 
-    // }
+      }
 
-    // stage("Build") {
+    }
 
-    //   steps {
+    stage("Build") {
 
-    //     sh 'npm run build'
-    //   }
+      steps {
 
-    // }
-    // stage("Build Docker Image") {
-    //   steps {
+        sh 'npm run build'
+      }
 
-    //     script {
-    //       dockerImage = docker.build registry + ":$BUILD_NUMBER"
-    //     }
-    //   }
-    //   post{
-        
-    //       failure{
-    //         sh '  docker system prune --volumes -a -f '
-    //       }
-    //   }
-    // }
+    }
+    stage("Build Docker Image") {
+      steps {
 
-    // stage("push image to docker hup") {
-    //   steps {
-    //     script {
-    //       docker.withRegistry('', registryCredential) {
-    //         dockerImage.push()
-    //       }
-    //     }
-    //   }
-    // }
+        script {
+          dockerImage = docker.build registry + ":$BUILD_NUMBER"
+        }
+      }
+      post {
 
-    // stage("Test Docker Image In Dev Server ") {
-    //   steps {
-    //     sh ' docker run --name test_$BUILD_NUMBER -d -p 5000:8080 $registry:$BUILD_NUMBER '
-    //     sh 'sleep 2'
-    //     sh 'curl localhost:5000'
-    //   }
-  
+        failure {
+          sh '  docker system prune --volumes -a -f '
+        }
+      }
+    }
 
-    // }
+    stage("push image to docker hup") {
+      steps {
+        script {
+          docker.withRegistry('', registryCredential) {
+            dockerImage.push()
+          }
+        }
+      }
+    }
+
+    stage("Test Docker Image In Dev Server ") {
+      steps {
+        sh ' docker run --name test_$BUILD_NUMBER -d -p 5000:8080 $registry:$BUILD_NUMBER '
+        sh 'sleep 2'
+        sh 'curl localhost:5000'
+      }
+
+    }
     stage("Deply IAC ") {
       when {
-          branch 'master'
+        branch 'master'
       }
       steps {
         withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
@@ -90,15 +89,14 @@ pipeline {
             sh 'terraform init'
             sh 'terraform destroy --auto-approve'
             sh 'terraform apply --auto-approve'
-             sh 'terraform output  -raw server_ip > tump ' 
-            script{
-               serverIP = readFile('tump').trim()
+            sh 'terraform output  -raw server_ip > tump '
+            script {
+              serverIP = readFile('tump').trim()
             }
-              
+
           }
         }
-       
-        
+
       }
       post {
 
@@ -116,24 +114,39 @@ pipeline {
         }
       }
     }
-    // stage("ansbile") {
-    //   when {
-    //       branch 'master'
-    //   }
-    //   steps {
-    //     dir("./terraform-aws-instance") {
-    //       withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+    stage("ansbile") {
+      when {
+        branch 'master'
+      }
+      steps {
+        dir("./terraform-aws-instance") {
 
-    //         sh 'ansible-playbook -i ansbile/inventory/inventory --extra-vars ansible_ssh_host=$(terraform output  -raw server_ip) --extra-vars  IMAGE_NAME=$registry:$BUILD_NUMBER --private-key=$ANSIBLE_PRIVATE_KEY ./ansbile/inventory/deploy.yml '
+          sh 'ansible-playbook -i ansbile/inventory/inventory --extra-vars ansible_ssh_host=${serverIP} --extra-vars  IMAGE_NAME=$registry:$BUILD_NUMBER --private-key=$ANSIBLE_PRIVATE_KEY ./ansbile/inventory/deploy.yml '
 
-    //       }
-    //     }
-    //   }
-    // }
-    stage("echo Ip"){
-        steps{
-          echo "${serverIP}"
         }
+      }
+    }
+    stage("Somok test in prod server") {
+      steps {
+        echo "${serverIP}"
+        sh 'curl ${serverIP} '
+      }
+      post {
+
+        success {
+          echo "====> Somok test successful ====>"
+        }
+        failure {
+          echo "====++++only when failed++++===="
+          withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+
+            dir("terraform-aws-instance") {
+              sh 'terraform destroy --auto-approve'
+
+            }
+          }
+        }
+      }
     }
 
   }
@@ -141,19 +154,21 @@ pipeline {
   post {
     always {
       cleanWs(cleanWhenNotBuilt: false,
-              deleteDirs: true,
-              disableDeferredWipeout: true,
-              notFailBuild: true,
-              patterns: [[pattern: '.gitignore', type: 'INCLUDE'],
-                          [pattern: '.propsfile', type: 'EXCLUDE']])
-        }
+        deleteDirs: true,
+        disableDeferredWipeout: true,
+        notFailBuild: true,
+        patterns: [
+          [pattern: '.gitignore', type: 'INCLUDE'],
+          [pattern: '.propsfile', type: 'EXCLUDE']
+        ])
+    }
     success {
       echo "========A executed successfully========"
       sh 'bash ./clearDockerImages.sh'
 
     }
     failure {
-           sh 'bash ./clearDockerImages.sh'
+      sh 'bash ./clearDockerImages.sh'
     }
   }
 }
