@@ -1,3 +1,4 @@
+def serverIP = ''
 pipeline {
   agent any
     options {
@@ -89,9 +90,9 @@ pipeline {
             // sh 'terraform init'
             // sh 'terraform destroy --auto-approve'
             // sh 'terraform apply --auto-approve'
+             sh 'terraform output  -raw server_ip > tump ' 
             script{
-
-                params.server_ip = $(terraform output  -raw server_ip)
+               serverIP = readFile('myfile.txt').trim()
             }
               
           }
@@ -131,7 +132,7 @@ pipeline {
     // }
     stage("echo Ip"){
         steps{
-          echo "${params.custom_var}"
+          echo "${serverIP}"
         }
     }
 
