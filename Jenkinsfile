@@ -1,12 +1,10 @@
-def serverIP = ''
+def serverIP = ""
 pipeline {
   agent any
   options {
     skipDefaultCheckout(true)
   }
-  parameters {
-    string(name: 'server_ip', defaultValue: '')
-  }
+ 
   environment {
     registry = "hossamalsankary/nodejs_app"
     registryCredential = 'docker_credentials'
@@ -124,7 +122,7 @@ pipeline {
       }
       steps {
         dir("./terraform-aws-instance") {
-        sh 'echo "${serverIP}"'
+        sh 'echo ${serverIP}'
 
           sh 'ansible-playbook -i ansbile/inventory/inventory --extra-vars ansible_ssh_host=${serverIP} --extra-vars  IMAGE_NAME=$registry:$BUILD_NUMBER --private-key=$ANSIBLE_PRIVATE_KEY ./ansbile/inventory/deploy.yml '
 
