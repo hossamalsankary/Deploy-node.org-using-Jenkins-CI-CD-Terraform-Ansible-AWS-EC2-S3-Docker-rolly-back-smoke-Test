@@ -94,7 +94,10 @@ pipeline {
               
           }
         }
+        script{
+
          params.server_ip = $ip
+        }
         
       }
       post {
@@ -129,7 +132,7 @@ pipeline {
     // }
     stage("echo Ip"){
         steps{
-          echo "${env.custom_var}"
+          echo "${params.custom_var}"
         }
     }
 
