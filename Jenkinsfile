@@ -28,27 +28,29 @@ pipeline {
       }
 
     }
+    stage('Parallel Stage') {
+      parallel{
 
-    parallel{
-    stage("Test") {
+        stage("Test") {
 
-      steps {
+          steps {
 
-        sh 'npm run  test:unit'
+            sh 'npm run  test:unit'
+
+          }
+
+        }
+
+        stage("Build") {
+
+          steps {
+
+            sh 'npm run build'
+          }
+
+        }
 
       }
-
-    }
-
-    stage("Build") {
-
-      steps {
-
-        sh 'npm run build'
-      }
-
-    }
-
     }
     stage("Build Docker Image") {
       steps {
