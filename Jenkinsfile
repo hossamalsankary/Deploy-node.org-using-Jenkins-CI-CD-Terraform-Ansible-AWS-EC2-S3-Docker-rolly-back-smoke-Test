@@ -89,12 +89,13 @@ pipeline {
             // sh 'terraform init'
             // sh 'terraform destroy --auto-approve'
             // sh 'terraform apply --auto-approve'
-           ip =  sh (script: 'terraform output  -raw server_ip', returnStdout: true).trim()
-            env.server_ip = ip
-            ech "${env.ip}"
+           sh "export IP =  $(terraform output  -raw server_ip)"
+           
               
           }
         }
+         env.server_ip = ip
+        
       }
       post {
 
