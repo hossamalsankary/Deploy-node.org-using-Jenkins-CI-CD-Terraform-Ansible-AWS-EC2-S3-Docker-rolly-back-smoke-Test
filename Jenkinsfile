@@ -138,7 +138,7 @@ pipeline {
       }
       steps {
         echo "${serverIP}"
-        sh  " curl ${serverIP} "
+        sh  "curl ${serverIP} "
       }
       post {
 
@@ -150,7 +150,7 @@ pipeline {
           withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
 
             dir("terraform-aws-instance") {
-              sh 'terraform destroy --auto-approve'
+             // sh 'terraform destroy --auto-approve'
 
             }
           }
