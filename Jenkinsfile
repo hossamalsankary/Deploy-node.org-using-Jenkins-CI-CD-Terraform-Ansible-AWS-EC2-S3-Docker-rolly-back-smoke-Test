@@ -14,7 +14,6 @@ pipeline {
   }
 
   stages {
-    install dependencies
     stage("install dependencies") {
 
       steps {
