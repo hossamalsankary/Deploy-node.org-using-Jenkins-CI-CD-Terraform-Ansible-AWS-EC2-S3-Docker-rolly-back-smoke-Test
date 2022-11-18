@@ -138,7 +138,7 @@ pipeline {
       }
       steps {
         echo "${serverIP}"
-        sh 'curl ${serverIP} '
+        sh  " curl ${serverIP} "
       }
       post {
 
