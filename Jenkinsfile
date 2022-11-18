@@ -87,12 +87,12 @@ pipeline {
       steps {
         withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
           dir("terraform-aws-instance") {
-            // sh 'terraform init'
-            // sh 'terraform destroy --auto-approve'
-            // sh 'terraform apply --auto-approve'
+            sh 'terraform init'
+            sh 'terraform destroy --auto-approve'
+            sh 'terraform apply --auto-approve'
              sh 'terraform output  -raw server_ip > tump ' 
             script{
-               serverIP = readFile('myfile.txt').trim()
+               serverIP = readFile('tump').trim()
             }
               
           }
