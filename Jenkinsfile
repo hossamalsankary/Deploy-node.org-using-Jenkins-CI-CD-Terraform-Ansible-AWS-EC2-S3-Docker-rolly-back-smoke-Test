@@ -89,7 +89,7 @@ pipeline {
             // sh 'terraform init'
             // sh 'terraform destroy --auto-approve'
             // sh 'terraform apply --auto-approve'
-           sh "export IP =  $(terraform output  -raw server_ip)"
+            sh 'export IP =  $(terraform output  -raw server_ip)'
            
               
           }
