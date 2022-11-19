@@ -34,6 +34,8 @@ This will start the development server on `http://localhost:8080/en/`. This page
 If you want to submit a new feature or a bugfix, the best way is to create the changes in a separate branch, e.g.: `git checkout -b feature/mycoolfeature`. This will make it easier for you to submit a pull request and get your feature merged.
 
 ### CI?CD Part >>
+ <img src="/8.png" alt="Permissions" />
+ <img src="/9.png" alt="Permissions" />
  <img src="/0.png" alt="Permissions" />
  <img src="/1.png" alt="Permissions" />
  <img src="/2.png" alt="Permissions" />
@@ -43,5 +45,3 @@ If you want to submit a new feature or a bugfix, the best way is to create the c
  <img src="/5.png" alt="Permissions" />
  <img src="/6.png" alt="Permissions" />
  <img src="/7.png" alt="Permissions" />
- <img src="/8.png" alt="Permissions" />
- <img src="/9.png" alt="Permissions" />
