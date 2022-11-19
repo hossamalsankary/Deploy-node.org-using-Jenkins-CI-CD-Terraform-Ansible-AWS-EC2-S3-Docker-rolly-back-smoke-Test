@@ -178,6 +178,8 @@ pipeline {
 
     }
     failure {
+            echo "========A executed successfully========"
+
    //   sh 'bash ./clearDockerImages.sh'
     }
   }
