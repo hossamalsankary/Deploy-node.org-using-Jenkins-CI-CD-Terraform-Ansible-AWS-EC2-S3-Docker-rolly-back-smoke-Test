@@ -138,6 +138,7 @@ pipeline {
       }
       steps {
         echo "${serverIP}"
+        
         sh  "curl ${serverIP} "
       }
       post {
@@ -150,7 +151,7 @@ pipeline {
           withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
 
             dir("terraform-aws-instance") {
-             // sh 'terraform destroy --auto-approve'
+             sh 'terraform destroy --auto-approve'
 
             }
           }
@@ -173,11 +174,11 @@ pipeline {
     }
     success {
       echo "========A executed successfully========"
-      sh 'bash ./clearDockerImages.sh'
+  //  sh 'bash ./clearDockerImages.sh'
 
     }
     failure {
-      sh 'bash ./clearDockerImages.sh'
+   //   sh 'bash ./clearDockerImages.sh'
     }
   }
 }
