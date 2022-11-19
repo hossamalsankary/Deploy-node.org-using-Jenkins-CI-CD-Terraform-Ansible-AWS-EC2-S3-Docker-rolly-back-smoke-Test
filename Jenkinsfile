@@ -174,13 +174,13 @@ pipeline {
     }
     success {
       echo "========A executed successfully========"
-  //  sh 'bash ./clearDockerImages.sh'
+      sh 'bash ./clearDockerImages.sh'
 
     }
     failure {
-            echo "========A executed successfully========"
+          
 
-   //   sh 'bash ./clearDockerImages.sh'
+         sh 'bash ./clearDockerImages.sh'
     }
   }
 }
