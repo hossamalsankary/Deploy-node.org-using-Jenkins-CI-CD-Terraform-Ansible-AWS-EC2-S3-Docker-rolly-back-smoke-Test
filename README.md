@@ -29,7 +29,7 @@ npm install
 npm start
 ```
 
-# CI?CD Part >>
+
 <img src="/Blank diagram(2).png" alt="Permissions" />
  deploying node.js application to production I using Jenkins as CI/CD, Terraform as IAC, Docker, Ansible as configuration management, EC2, VPC, AWS security group,
  Build container and push to docker hub
