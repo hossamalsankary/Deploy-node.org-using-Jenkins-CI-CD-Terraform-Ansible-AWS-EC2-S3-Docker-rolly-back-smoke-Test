@@ -75,6 +75,7 @@ npm start
           }
 ```
 - Stage(3) run command (npm build)
+```diff
         stage("Build") {
 
             steps {
