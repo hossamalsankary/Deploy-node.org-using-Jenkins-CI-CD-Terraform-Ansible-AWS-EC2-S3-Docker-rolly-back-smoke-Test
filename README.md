@@ -245,13 +245,22 @@ stage("push image to docker hup") {
 
 
  <img src="/8.png" alt="Permissions" />
+
  <img src="/9.png" alt="Permissions" />
+
  <img src="/0.png" alt="Permissions" />
+
  <img src="/1.png" alt="Permissions" />
+
  <img src="/2.png" alt="Permissions" />
+
  <img src="/002.png" alt="Permissions" />
+
  <img src="/3.png" alt="Permissions" />
+
  <img src="/4.png" alt="Permissions" />
  <img src="/5.png" alt="Permissions" />
+
  <img src="/6.png" alt="Permissions" />
  <img src="/7.png" alt="Permissions" />
+ 
