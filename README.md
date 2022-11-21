@@ -31,16 +31,22 @@ npm start
 
 # CI?CD Part >>
 <img src="/Blank diagram(2).png" alt="Permissions" />
-### deploying node.js application to production I using Jenkins as CI/CD, Terraform as IAC, Docker, Ansible as configuration management, EC2, VPC, AWS security group,
-## Build container and push to docker hub
+ deploying node.js application to production I using Jenkins as CI/CD, Terraform as IAC, Docker, Ansible as configuration management, EC2, VPC, AWS security group,
+ Build container and push to docker hub
 
 ### Project description
 
-# CI?CD Part >>
-### deploying node.js application to production I using Jenkins as CI/CD, Terraform as IAC, Docker, Ansible as configuration management, EC2, VPC, AWS security group,
-## Build container and push to docker hub
+- environment 
+```diff 
+ environment {
+    registry = "hossamalsankary/nodejs_app" # app name
+    registryCredential = 'docker_credentials' # my docker hup credentials 
+    ANSIBLE_PRIVATE_KEY = credentials('secritfile')  # for ssh connection secret.pem file 
+  }
+```
+- Stage(1) install all required dependencies and clear the Jenkins environment
+```diff 
 
-<<<<<<< HEAD
   stage("install dependencies") {
 
       steps {
@@ -237,66 +243,6 @@ stage("push image to docker hup") {
 ```
 
 
-=======
-### Project description
-- Stage(1) install all required dependencies and clear the Jenkins environment
-```diff 
-
-  stage("install dependencies") {
-
-      steps {
-        sh 'npm install'
-      }
-      post {
-        always {
-          sh 'bash ./clearDockerImages.sh' # you can find this bashscript here[link]("/clearDockerImages.sh")
-        }
-
-      }
-
-    }
-
-```
-- Stage(2) run command (npm test)  to test the code before build it
-```diff 
-        stage("Test") {
-
-            steps {
-
-              sh 'npm run  test:unit'
-
-            }
-
-          }
-```
-- Stage(3) run command (npm build)
-        stage("Build") {
-
-            steps {
-
-              sh 'npm run build'
-            }
-
-          }```diff 
-
-```
-
-
-- Stage (4) build our app docker image
-
-
-- Stage (5) push the docker image to the docker hub account with a different tag number
-- Stage (6) smoke test in the development environment just to make the image invalid
-- Stage (7) deploy IAC using terraform with remote state file in the s3 bucket
--  Stage (8) using ansible to configure the server and install all dependency
-- Stage(10) smoke test in the production environment
-- post Stage (always) clear Jenkins workspace
-- post Stage (failure) clear Jenkins workspace and destroy IAC
-- rolly back if any stage filed
-
-
-<img src="/Blank diagram(2).png" alt="Permissions" />
->>>>>>> 38d1f0db06cf368681996f5c4a65aaada799c5c1
  <img src="/8.png" alt="Permissions" />
  <img src="/9.png" alt="Permissions" />
  <img src="/0.png" alt="Permissions" />
